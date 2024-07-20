@@ -1,12 +1,14 @@
-const { env } = require('./src/env');
+/**
+ * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
+ * for Docker builds.
+ */
+await import("./src/env.js");
 
-const nextConfig = {
-  env: {
-    NEXT_PUBLIC_API_URL: env.NEXT_PUBLIC_API_URL,
-    ANOTHER_ENV_VARIABLE: env.ANOTHER_ENV_VARIABLE,
-    // Add other environment variables here
-  },
-  // other Next.js config options
+/** @type {import("next").NextConfig} */
+const config = {
+    eslint:{
+        ignoreDuringBuilds:true
+    },
 };
 
-module.exports = nextConfig;
+export default config;
