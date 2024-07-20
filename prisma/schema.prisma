@@ -1,0 +1,32 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id          String    @id @default(uuid())
+  name        String
+  email       String    @unique
+  password    String
+  verified    Boolean    @default(false)
+  otp         String?
+  categories  UserCategory[]
+}
+
+model Category {
+  id   String   @id @default(uuid())
+  name String
+  users UserCategory[]
+}
+
+model UserCategory {
+  userId     String
+  categoryId String
+  user       User     @relation(fields: [userId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+  @@id([userId, categoryId]) // Define the composite key at the model level using @@id
+}
