@@ -1,9 +1,14 @@
-// src/pages/login.tsx
-"use client"
+"use client";
 import React, { useState } from 'react';
 import Link from 'next/link';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { useRouter } from 'next/navigation';
+
+interface LoginResponse {
+  status: boolean;
+  token?: string;
+  msg: string;
+}
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -13,19 +18,19 @@ const Login: React.FC = () => {
 
   const handleLogin = async () => {
     try {
-      // Register the user
-      const response = await axios.post("http://localhost:3000/api/login", { email, password });
-      if (response.data.status === true) {
-        // Store email in sessionStorage and redirect
-        sessionStorage.setItem('token', response.data.token);
-        alert(response.data.msg);
+      const response: AxiosResponse<LoginResponse> = await axios.post("http://localhost:3000/api/login", { email, password });
+      const responseData = response.data;
+
+      if (responseData.status) {
+        sessionStorage.setItem('token', responseData.token as string); // Type assertion here
+        alert(responseData.msg);
         router.push('/categories');
       } else {
-        alert(response.data.msg);
+        alert(responseData.msg);
       }
     } catch (error) {
-      console.error('Registration failed:', error);
-      alert("Registration failed. Please try again.");
+      console.error('Login failed:', error);
+      alert("Login failed. Please try again.");
     }
   };
 
@@ -67,7 +72,7 @@ const Login: React.FC = () => {
           Login
         </button>
         <p className="mt-4 text-center">
-          Don't have an account? <Link href="/" className="text-blue-500">Register</Link>
+          Don&apos;t have an account? <Link href="/" className="text-blue-500">Register</Link>
         </p>
       </div>
     </div>
