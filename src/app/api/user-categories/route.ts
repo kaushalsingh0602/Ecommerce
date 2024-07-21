@@ -33,7 +33,7 @@ export async function GET(req:NextRequest) {
     return NextResponse.json(userCategories, { status: 200 });
   } catch (error) {
     console.error('Error:', error);
-    return NextResponse.json({ status: false, msg: error.message || 'Invalid JSON' }, { status: 400 });
+    return NextResponse.json({ status: false, msg:'Invalid JSON' }, { status: 400 });
   }
 }
 
@@ -74,7 +74,7 @@ export async function POST(req:NextRequest) {
     return NextResponse.json({ status: true, msg: 'Success' }, { status: 200 });
   } catch (error) {
     console.error('Error:', error);
-    return NextResponse.json({ status: false, msg: error.message || 'Invalid JSON' }, { status: 400 });
+    return NextResponse.json({ status: false, msg:'Invalid JSON' }, { status: 400 });
   }
 }
 

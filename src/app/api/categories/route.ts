@@ -61,6 +61,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error('Error:', error);
-    return NextResponse.json({ status: false, msg: error.message || "Invalid JSON" }, { status: 400 });
+    return NextResponse.json({ status: false, msg: "Invalid JSON" }, { status: 400 });
   }
 }
