@@ -49,7 +49,7 @@ export async function POST(req:NextRequest) {
       return NextResponse.json({ status: false, msg: 'Unauthorized user' }, { status: 401 });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET) as MyJwtPayload;
     const email = decoded.email;
 
     if (!email) {
