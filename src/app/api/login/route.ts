@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       }
 
 
-      const token = jwt.sign({email:email},process.env.SECREAT)
+      const token = jwt.sign({email:email},"Hello this is secret")
 
       
       
