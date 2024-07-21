@@ -2,12 +2,23 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+interface Category {
+  id: string;
+  name: string;
+}
+
+interface Pagination {
+  totalCategories: number;
+  totalPages: number;
+  currentPage: number;
+}
+
 export default function Home() {
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [responseMessage, setResponseMessage] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedCategories, setSelectedCategories] = useState({});
+  const [selectedCategories, setSelectedCategories] = useState<{ [key: string]: boolean }>({});
   const [token, setToken] = useState('no token');
   const [pageRange, setPageRange] = useState({ start: 1, end: 5 });
   const router = useRouter();
