@@ -1,9 +1,12 @@
 import prisma from '~/server/db';
 import { NextRequest, NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 // Replace this with your JWT secret
 const JWT_SECRET = "Hello this is secret";
+interface MyJwtPayload extends JwtPayload {
+  email: string;
+}
 
 export async function GET(req:NextRequest) {
   try {
@@ -13,7 +16,8 @@ export async function GET(req:NextRequest) {
       return NextResponse.json({ status: false, msg: 'Unauthorized user' }, { status: 401 });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET);
+    // Verify the JWT token and assert the payload type
+    const decoded = jwt.verify(token, JWT_SECRET) as MyJwtPayload;
     const email = decoded.email;
 
     if (!email) {
