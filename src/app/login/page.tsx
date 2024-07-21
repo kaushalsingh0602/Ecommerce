@@ -1,7 +1,8 @@
 "use client";
 import React, { useState } from 'react';
 import Link from 'next/link';
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
+import type { AxiosResponse } from 'axios';
 import { useRouter } from 'next/navigation';
 
 interface LoginResponse {
@@ -22,7 +23,7 @@ const Login: React.FC = () => {
       const responseData = response.data;
 
       if (responseData.status) {
-        sessionStorage.setItem('token', responseData.token as string); // Type assertion here
+        sessionStorage.setItem('token', responseData.token!); // Non-null assertion here
         alert(responseData.msg);
         router.push('/categories');
       } else {
