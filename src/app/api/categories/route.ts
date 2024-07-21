@@ -3,8 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 
 // Replace this with your JWT secret
-const JWT_SECRET = process.env.SECREAT;
-
+const JWT_SECRET = "Hello this is secret"
 export async function POST(req: NextRequest) {
   try {
     console.log ("hello")
