@@ -39,13 +39,22 @@ const Register: React.FC = () => {
     "use server"
    
      // Register the user
-     const user:User={
-      name: formData.get("name"),
-      email:formData.get("email"),
-      password:formData.get("password"),
-      
-     
-     }
+    // Type casting and null checking
+    const name = formData.get("name") as string | null;
+    const email = formData.get("email") as string | null;
+    const password = formData.get("password") as string | null;
+
+    // Ensure none of the fields are null
+    if (!name || !email || !password) {
+      alert('Please fill out all fields.');
+      return;
+    }
+
+    const user: User = {
+      name: name,
+      email: email,
+      password: password,
+    };
      const find = await prisma.user.findUnique({ where: { email: user.email }  });
      console.log(find)
      if(!find){
