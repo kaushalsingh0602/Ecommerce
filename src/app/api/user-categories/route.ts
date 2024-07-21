@@ -78,14 +78,14 @@ export async function POST(req:NextRequest) {
   }
 }
 
-export async function handler(req:NextRequest) {
-  if (req.method === 'GET') {
-    return GET(req);
-  } else if (req.method === 'POST') {
-    return POST(req);
-  } else {
-    return NextResponse.json({ status: false, msg: 'Method not allowed' }, { status: 405 });
-  }
-}
+// export async function handler(req:NextRequest) {
+//   if (req.method === 'GET') {
+//     return GET(req);
+//   } else if (req.method === 'POST') {
+//     return POST(req);
+//   } else {
+//     return NextResponse.json({ status: false, msg: 'Method not allowed' }, { status: 405 });
+//   }
+// }
 
-export default handler;
+// export { handler as GET, handler as POST };
