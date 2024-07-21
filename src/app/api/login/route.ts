@@ -1,4 +1,4 @@
-// src/app/api/otp/route.ts
+// src/app/api/login/route.ts
 import prisma from '~/server/db';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'

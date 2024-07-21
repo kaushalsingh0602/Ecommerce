@@ -1,3 +1,4 @@
+// api/user-categories/route.ts
 import prisma from '~/server/db';
 import { NextRequest, NextResponse } from 'next/server';
 import jwt, { JwtPayload } from 'jsonwebtoken';

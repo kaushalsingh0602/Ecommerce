@@ -1,7 +1,8 @@
-import prisma from '~/server/db';
-import { NextRequest, NextResponse } from 'next/server';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+// api/categories/route.ts
 
+import prisma from '~/server/db';
+import type { NextRequest, NextResponse } from 'next/server';
+import jwt, type { JwtPayload } from 'jsonwebtoken';
 // Replace this with your JWT secret
 const JWT_SECRET = "Hello this is secret";
 
