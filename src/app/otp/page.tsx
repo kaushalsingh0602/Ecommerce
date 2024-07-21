@@ -4,23 +4,28 @@ import React, { useState, Suspense } from 'react';
 import axios from 'axios';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+interface ApiResponse {
+  status: boolean;
+  msg: string;
+}
+
 const OTPVerification: React.FC = () => {
   const [otp, setOtp] = useState<string[]>(new Array(8).fill(''));
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get('email');
 
-  const handleChange = (element: HTMLInputElement, index: number) => {
+  const handleChange = (element: HTMLInputElement, _index: number) => {
     if (isNaN(Number(element.value))) return false;
 
-    setOtp([...otp.map((d, idx) => (idx === index ? element.value : d))]);
+    setOtp([...otp.map((d, idx) => (idx === _index ? element.value : d))]);
 
     if (element.nextSibling && element.value) {
       (element.nextSibling as HTMLElement).focus();
     }
   };
 
-  const handleKeyDown = (element: HTMLInputElement, index: number) => {
+  const handleKeyDown = (element: HTMLInputElement, _index: number) => {
     if (element.value === '' && element.previousSibling) {
       (element.previousSibling as HTMLElement).focus();
     }
@@ -28,7 +33,7 @@ const OTPVerification: React.FC = () => {
 
   const handleVerify = async () => {
     try {
-      const response = await axios.post("http://localhost:3000/api/otp", { email, otp });
+      const response = await axios.post<ApiResponse>("http://localhost:3000/api/otp", { email, otp });
       if (response.data.status === true) {
         alert(response.data.msg);
         router.push('/login');
