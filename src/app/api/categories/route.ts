@@ -1,12 +1,17 @@
 import prisma from '~/server/db';
 import { NextRequest, NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 // Replace this with your JWT secret
-const JWT_SECRET = "Hello this is secret"
+const JWT_SECRET = "Hello this is secret";
+
+// Define the expected JWT payload interface
+interface MyJwtPayload extends JwtPayload {
+  email: string;
+}
+
 export async function POST(req: NextRequest) {
   try {
-    console.log ("hello")
     // Get the JWT token from the headers
     const token = req.headers.get('x-axestoken');
 
@@ -14,8 +19,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ status: false, msg: 'Unauthorized user' }, { status: 401 });
     }
 
-    // Verify the JWT token
-    const decoded = jwt.verify(token, JWT_SECRET);
+    // Verify the JWT token and assert the payload type
+    const decoded = jwt.verify(token, JWT_SECRET) as MyJwtPayload;
     const email = decoded.email;
 
     if (!email) {
@@ -31,8 +36,6 @@ export async function POST(req: NextRequest) {
     // Extract the email or other data from the parsed body
     const user = await prisma.user.findUnique({ where: { email } });
 
-    console.log(user)
-
     if (!user) {
       return NextResponse.json({ status: false, msg: 'User not found' }, { status: 404 });
     }
@@ -42,7 +45,6 @@ export async function POST(req: NextRequest) {
       skip: offset,
       take: limit,
     });
-    console.log(categories)
 
     const totalCategories = await prisma.category.count();
     const totalPages = Math.ceil(totalCategories / limit);
