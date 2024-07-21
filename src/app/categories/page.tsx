@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface Category {
@@ -15,10 +15,11 @@ interface Pagination {
 
 export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [responseMessage, setResponseMessage] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedCategories, setSelectedCategories] = useState<Record<string, boolean>>({});
-  const [token, setToken] = useState('no token');
+  const [token, setToken] = useState<string | null>(null); // Updated to handle null values
   const [pageRange, setPageRange] = useState({ start: 1, end: 5 });
   const router = useRouter();
 
@@ -34,7 +35,9 @@ export default function Home() {
     }
   }, [router]);
 
-  const fetchCategories = async (page: number) => {
+  const fetchCategories = useCallback(async (page: number) => {
+    if (!token) return;
+
     try {
       const response = await fetch(`http://localhost:3000/api/categories?page=${page}&limit=5`, {
         method: 'POST',
@@ -43,12 +46,14 @@ export default function Home() {
           'x-axestoken': token,
         },
       });
+
       const data: {
         categories: Category[],
         msg: string,
         pagination: Pagination,
       } = await response.json();
       setCategories(data.categories);
+      setResponseMessage(data.msg);
       setTotalPages(data.pagination.totalPages);
 
       const userCategoriesResponse = await fetch(`http://localhost:3000/api/user-categories`, {
@@ -58,6 +63,7 @@ export default function Home() {
           'x-axestoken': token,
         },
       });
+
       const userCategoriesData: { categoryId: string }[] = await userCategoriesResponse.json();
       const selected: Record<string, boolean> = {};
       userCategoriesData.forEach((cat) => {
@@ -66,14 +72,15 @@ export default function Home() {
       setSelectedCategories(selected);
     } catch (error) {
       console.error('Error:', error);
+      setResponseMessage('An error occurred');
     }
-  };
+  }, [token]);
 
   useEffect(() => {
-    if (token !== 'no token') {
+    if (token !== null) {
       void fetchCategories(page);
     }
-  }, [page, token]);
+  }, [page, token, fetchCategories]);
 
   const handleCheckboxChange = async (categoryId: string) => {
     const updatedSelectedCategories = {
@@ -87,7 +94,7 @@ export default function Home() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-axestoken': token,
+          'x-axestoken': token || '',
         },
         body: JSON.stringify({ categoryId, selected: updatedSelectedCategories[categoryId] }),
       });
