@@ -22,9 +22,9 @@ export default function Home() {
         router.push('/login');
       }
     }
-  }, []);
+  }, [router]);
 
-  const fetchCategories = async (page) => {
+  const fetchCategories = async (page: number) => {
     try {
       const response = await fetch(`http://localhost:3000/api/categories?page=${page}&limit=5`, {
         method: 'POST',
@@ -46,8 +46,8 @@ export default function Home() {
         },
       });
       const userCategoriesData = await userCategoriesResponse.json();
-      const selected = {};
-      userCategoriesData.forEach(cat => {
+      const selected: { [key: string]: boolean } = {};
+      userCategoriesData.forEach((cat: { categoryId: string }) => {
         selected[cat.categoryId] = true;
       });
       setSelectedCategories(selected);
@@ -63,7 +63,7 @@ export default function Home() {
     }
   }, [page, token]);
 
-  const handleCheckboxChange = async (categoryId) => {
+  const handleCheckboxChange = async (categoryId: string) => {
     const updatedSelectedCategories = {
       ...selectedCategories,
       [categoryId]: !selectedCategories[categoryId],
@@ -84,14 +84,14 @@ export default function Home() {
     }
   };
 
-  const updatePageRange = (newPage) => {
+  const updatePageRange = (newPage: number) => {
     const rangeSize = 5;
     const start = Math.floor((newPage - 1) / rangeSize) * rangeSize + 1;
     const end = Math.min(start + rangeSize - 1, totalPages);
     setPageRange({ start, end });
   };
 
-  const handlePageChange = (newPage) => {
+  const handlePageChange = (newPage: number) => {
     setPage(newPage);
     updatePageRange(newPage);
   };
