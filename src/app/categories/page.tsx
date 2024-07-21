@@ -76,7 +76,7 @@ export default function Home() {
         throw new Error('Failed to fetch user categories');
       }
 
-      const userCategoriesData: UserCategoriesResponse[] = await userCategoriesResponse.json();
+      const userCategoriesData = (await userCategoriesResponse.json()) as UserCategoriesResponse[];
       const selected: Record<string, boolean> = {};
       userCategoriesData.forEach((cat) => {
         selected[cat.categoryId] = true;
