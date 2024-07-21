@@ -15,7 +15,6 @@ interface Pagination {
 
 export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [responseMessage, setResponseMessage] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedCategories, setSelectedCategories] = useState<Record<string, boolean>>({});
@@ -50,7 +49,6 @@ export default function Home() {
         pagination: Pagination,
       } = await response.json();
       setCategories(data.categories);
-      setResponseMessage(data.msg);
       setTotalPages(data.pagination.totalPages);
 
       const userCategoriesResponse = await fetch(`http://localhost:3000/api/user-categories`, {
@@ -68,7 +66,6 @@ export default function Home() {
       setSelectedCategories(selected);
     } catch (error) {
       console.error('Error:', error);
-      setResponseMessage('An error occurred');
     }
   };
 
