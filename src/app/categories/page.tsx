@@ -59,7 +59,7 @@ export default function Home() {
         throw new Error('Failed to fetch categories');
       }
 
-      const data: ApiResponse = await response.json();
+      const data = (await response.json()) as ApiResponse;  // Type assertion here
       setCategories(data.categories);
       setResponseMessage(data.msg);
       setTotalPages(data.pagination.totalPages);
