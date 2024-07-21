@@ -10,9 +10,9 @@ export async function POST(req: NextRequest) {
     const { email, otp } = body;
     const otpString = otp.join('');
     const user = await prisma.user.findUnique({ where: { email } });
-
+     console.log("",otpString)
     if (!user || user.otp !== otpString) {
-      throw new Error('Invalid OTP');
+      return NextResponse.json({ status: false, msg: "email not verifide" });
     }
 
     await prisma.user.update({
