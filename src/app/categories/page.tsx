@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -13,13 +13,23 @@ interface Pagination {
   currentPage: number;
 }
 
+interface ApiResponse {
+  categories: Category[];
+  msg: string;
+  pagination: Pagination;
+}
+
+interface UserCategoriesResponse {
+  categoryId: string;
+}
+
 export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [responseMessage, setResponseMessage] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedCategories, setSelectedCategories] = useState<Record<string, boolean>>({});
-  const [token, setToken] = useState<string | null>(null); // Updated to handle null values
+  const [token, setToken] = useState('no token');
   const [pageRange, setPageRange] = useState({ start: 1, end: 5 });
   const router = useRouter();
 
@@ -36,8 +46,6 @@ export default function Home() {
   }, [router]);
 
   const fetchCategories = useCallback(async (page: number) => {
-    if (!token) return;
-
     try {
       const response = await fetch(`http://localhost:3000/api/categories?page=${page}&limit=5`, {
         method: 'POST',
@@ -47,11 +55,11 @@ export default function Home() {
         },
       });
 
-      const data: {
-        categories: Category[],
-        msg: string,
-        pagination: Pagination,
-      } = await response.json();
+      if (!response.ok) {
+        throw new Error('Failed to fetch categories');
+      }
+
+      const data: ApiResponse = await response.json();
       setCategories(data.categories);
       setResponseMessage(data.msg);
       setTotalPages(data.pagination.totalPages);
@@ -64,7 +72,11 @@ export default function Home() {
         },
       });
 
-      const userCategoriesData: { categoryId: string }[] = await userCategoriesResponse.json();
+      if (!userCategoriesResponse.ok) {
+        throw new Error('Failed to fetch user categories');
+      }
+
+      const userCategoriesData: UserCategoriesResponse[] = await userCategoriesResponse.json();
       const selected: Record<string, boolean> = {};
       userCategoriesData.forEach((cat) => {
         selected[cat.categoryId] = true;
@@ -77,8 +89,8 @@ export default function Home() {
   }, [token]);
 
   useEffect(() => {
-    if (token !== null) {
-      void fetchCategories(page);
+    if (token !== 'no token') {
+      fetchCategories(page);
     }
   }, [page, token, fetchCategories]);
 
@@ -94,7 +106,7 @@ export default function Home() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-axestoken': token || '',
+          'x-axestoken': token,
         },
         body: JSON.stringify({ categoryId, selected: updatedSelectedCategories[categoryId] }),
       });
@@ -121,6 +133,7 @@ export default function Home() {
         <h1 className="text-xl font-bold mb-4 text-center">Please mark your interests!</h1>
         <p className="mb-4 text-center">We will keep you notified.</p>
         <h3 className="mb-4 font-bold">My saved interests!</h3>
+        {responseMessage && <p className="text-center">{responseMessage}</p>}
         {categories && categories.map((category) => (
           <label key={category.id} className="flex items-center mb-2">
             <input
