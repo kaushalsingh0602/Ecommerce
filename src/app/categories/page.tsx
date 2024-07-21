@@ -1,7 +1,5 @@
-// categories/page.tsx
-
 "use client"
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface Category {
@@ -13,6 +11,16 @@ interface Pagination {
   totalCategories: number;
   totalPages: number;
   currentPage: number;
+}
+
+interface ApiResponse {
+  categories: Category[];
+  msg: string;
+  pagination: Pagination;
+}
+
+interface UserCategoriesResponse {
+  categoryId: string;
 }
 
 export default function Home() {
@@ -37,7 +45,7 @@ export default function Home() {
     }
   }, [router]);
 
-  const fetchCategories = async (page: number) => {
+  const fetchCategories = useCallback(async (page: number) => {
     try {
       const response = await fetch(`http://localhost:3000/api/categories?page=${page}&limit=5`, {
         method: 'POST',
@@ -46,7 +54,8 @@ export default function Home() {
           'x-axestoken': token,
         },
       });
-      const data = await response.json();
+
+      const data: ApiResponse = await response.json();
       setCategories(data.categories);
       setResponseMessage(data.msg);
       setTotalPages(data.pagination.totalPages);
@@ -58,9 +67,10 @@ export default function Home() {
           'x-axestoken': token,
         },
       });
-      const userCategoriesData = await userCategoriesResponse.json();
+
+      const userCategoriesData: UserCategoriesResponse[] = await userCategoriesResponse.json();
       const selected: { [key: string]: boolean } = {};
-      userCategoriesData.forEach((cat: { categoryId: string }) => {
+      userCategoriesData.forEach((cat) => {
         selected[cat.categoryId] = true;
       });
       setSelectedCategories(selected);
@@ -68,13 +78,13 @@ export default function Home() {
       console.error('Error:', error);
       setResponseMessage('An error occurred');
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     if (token !== 'no token') {
       fetchCategories(page);
     }
-  }, [page, token]);
+  }, [page, token, fetchCategories]);
 
   const handleCheckboxChange = async (categoryId: string) => {
     const updatedSelectedCategories = {
@@ -115,7 +125,7 @@ export default function Home() {
         <h1 className="text-xl font-bold mb-4 text-center">Please mark your interests!</h1>
         <p className="mb-4 text-center">We will keep you notified.</p>
         <h3 className="mb-4 font-bold">My saved interests!</h3>
-        {/* {responseMessage && <p className="text-center">{responseMessage}</p>} */}
+        {responseMessage && <p className="text-center">{responseMessage}</p>}
         {categories && categories.map((category) => (
           <label key={category.id} className="flex items-center mb-2">
             <input
