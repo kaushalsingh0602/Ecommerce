@@ -90,7 +90,7 @@ export default function Home() {
 
   useEffect(() => {
     if (token !== 'no token') {
-      fetchCategories(page);
+      void fetchCategories(page); // Explicitly marking the promise as intentionally not awaited
     }
   }, [page, token, fetchCategories]);
 
@@ -134,12 +134,12 @@ export default function Home() {
         <p className="mb-4 text-center">We will keep you notified.</p>
         <h3 className="mb-4 font-bold">My saved interests!</h3>
         {responseMessage && <p className="text-center">{responseMessage}</p>}
-        {categories && categories.map((category) => (
+        {categories?.map((category) => (
           <label key={category.id} className="flex items-center mb-2">
             <input
               type="checkbox"
               checked={selectedCategories[category.id] ?? false}
-              onChange={() => handleCheckboxChange(category.id)}
+              onChange={() => void handleCheckboxChange(category.id)}
               className="mr-2"
             />
             {category.name}
